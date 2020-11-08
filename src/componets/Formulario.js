@@ -1,6 +1,6 @@
 import React, {Fragment, useState} from 'react';
-
-const Formulario = () =>{
+import { v4 as uuidv4 } from 'uuid';
+const Formulario = ({crearCitas}) =>{
 
 //creando el state para las citas
     const [cita, actualizarCitas] = useState({
@@ -11,6 +11,9 @@ const Formulario = () =>{
         sintomas: ''
     });
 
+// creando el state para los errores
+    const [error, actualizarError]= useState(false);    
+
 //evento onChange para actualizar el estado
 
     const actualizandoState = e => {
@@ -20,6 +23,34 @@ const Formulario = () =>{
         })
 
     }
+
+ //Evento submit
+ 
+    const submitCita = e=>{
+        e.preventDefault();
+        
+        //Válidar datos
+        if(mascota.trim()==="" || propietario.trim()==="" || 
+        fecha.trim()==="" || hora.trim()==="" || sintomas.trim() ===""){
+            actualizarError(true)
+            return
+        }
+        // Quitando el mensaje del error
+        actualizarError(false)
+        //Crear un Id
+        cita.id= uuidv4();
+        // Crear una cita
+        crearCitas(cita)
+        actualizarCitas({
+            mascota: '',
+            propietario: '',
+            fecha: '',
+            hora: '',
+            sintomas: ''
+        })
+
+        //reiniciar form
+    }
 // extrayendo valores mediante la destructuración
     const {mascota, propietario, fecha, hora, sintomas} = cita;
 
@@ -27,7 +58,13 @@ const Formulario = () =>{
         <Fragment>
             <h2>Crear cita</h2>
 
-            <form>
+            {error ? <p className="alerta-error"> Es necesario llenar todos los campos</p>
+            : null}
+
+            <form
+                onSubmit={submitCita}
+            >
+
                 <label> Nombre de la mascota</label>
                 <input
                     type="text"
@@ -75,10 +112,12 @@ const Formulario = () =>{
                 <button
                     type="submit"
                     className="u-full-width button-primary"
-                
+        
                 >Agregar cita</button>
                 
             </form>
+
+            
         </Fragment>
     );
 
