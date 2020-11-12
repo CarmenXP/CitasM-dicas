@@ -1,12 +1,20 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import Formulario from './componets/Formulario';
 import Cita from './componets/Cita';
 
+
 function App() {
+
+  //listas en localStorage
+
+  let citasIniciales = JSON.parse(localStorage.getItem('citas'));
+    if(!citasIniciales){
+      citasIniciales = [];
+    }
 
   //creando el state para guardar citas
 
-  const [citas, guardarCitas] = useState([])
+  const [citas, guardarCitas] = useState([citasIniciales])
 
   //función que crea citas
   const crearCitas = cita =>{
@@ -21,6 +29,20 @@ const eliminarCita= id=>{
   guardarCitas(nuevaCitas);
 }
 
+//mensaje cuando no hay citas y cuando si las hay
+
+const titulo= citas.length === 0 ? "No hay citas" : "Administra tus citas";
+
+//useEffect, sustitute al component di mount, se usa como tipo observador, nota los cambios en el estado
+
+useEffect (()=>{
+  if(citasIniciales){
+    localStorage.setItem('citas', JSON.stringify)(citas)
+  }
+  else{
+    localStorage.setItem('citas', JSON.stringify([]))
+  }
+}, [citas, citasIniciales]);
 
   return (
     <Fragment>
@@ -35,7 +57,7 @@ const eliminarCita= id=>{
         
             </div>
             <div className="one-half column">
-              <h2>Administra tus citas</h2>
+              <h2>{titulo}</h2>
               {citas.map(cita => (
                 <Cita 
                 key={cita.id}
